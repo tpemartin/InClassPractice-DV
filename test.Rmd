@@ -1,0 +1,104 @@
+---
+title: "test"
+author: "林茂廷"
+date: "10/11/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(readr)
+library(ggplot2)
+library(dplyr)
+library(showtext)
+font_add("QYuan","cwTeXQYuan-Medium.ttf") # 新增字體
+showtext_auto(enable=TRUE)
+theme_set(theme_classic())
+
+InterestRateData <- read_csv("https://raw.githubusercontent.com/tpemartin/github-data/master/InterestRateData.csv")
+
+# 取出變數
+InterestRateData %>% select(
+  銀行,
+  年月,
+  `定存利率-三個月-固定`,
+  `定存利率-一年期-固定`
+) -> allBankData
+
+# 修正class
+allBankData %>% 
+  mutate_at(vars(-銀行,-年月),funs(as.numeric(.))) ->
+  allBankData
+
+# 修正年月
+library(stringr)
+library(lubridate)
+allBankData$年月 %>%
+  str_c("1",.,"/01") %>%
+  ymd()+years(911) -> allBankData$年月
+
+# 移除多餘的row
+allBankData %>% filter(!is.na(年月)) -> allBankData
+
+# 產生利差
+allBankData %>% mutate(利差=`定存利率-一年期-固定`-`定存利率-三個月-固定`) -> allBankData
+
+# 產生平均利率及平均利差
+allBankData %>% 
+  select(年月,`定存利率-三個月-固定`,利差) %>%
+  group_by(年月) %>%
+  summarise(
+    平均利率=mean(`定存利率-三個月-固定`,na.rm=T),
+    平均利差=mean(利差,na.rm = T)) -> averageBankData
+```
+
+```{r 第一銀行}
+allBankData %>% filter(銀行=="第一銀行") %>%
+  ggplot(aes(x=年月,y=`定存利率-三個月-固定`))+
+  geom_line()-> testplot
+testplot
+```
+
+```{r 五家銀行}
+allBankData %>% ggplot()+
+  geom_line(aes(x=年月,y=`定存利率-三個月-固定`,
+                color=銀行))+
+  scale_color_brewer(type="qual")
+```
+
+```{r 平均利率走勢}
+averageBankData %>% 
+  ggplot()+
+  geom_line(aes(x=年月,y=平均利率))
+```
+
+```{r 利率與利差1}
+averageBankData %>% 
+  ggplot()+
+  geom_line(aes(x=年月,y=平均利率))+
+  geom_point(aes(x=年月,y=平均利率,alpha=平均利差),color='red')
+```
+
+
+```{r 利率與利差2}
+averageBankData %>% 
+  ggplot()+
+  geom_line(aes(x=年月,y=平均利率))+
+  geom_point(aes(x=年月,y=平均利率,color=平均利差))+
+  scale_color_distiller(type="div")
+```
+
+```{r}
+allBankData %>% ggplot()+
+  geom_density(aes(x=利差))
+```
+
+
+```{r}
+ggsave("testplot.png",testplot,
+       width=7,height=4)
+```
+

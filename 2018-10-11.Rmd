@@ -1,0 +1,101 @@
+---
+title: "2018-10-11"
+output: html_notebook
+---
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(showtext)
+font_add("QYuan","cwTeXQYuan-Medium.ttf") # 新增字體
+showtext_auto(enable=TRUE)
+theme_set(theme_classic())
+
+df <- data.frame(
+  x = runif(100),
+  y = runif(100),
+  z1 = rnorm(100),
+  z2 = abs(rnorm(100))
+)
+
+# Default colour scale colours from light blue to dark blue
+ggplot(df, aes(x, y)) +
+  geom_point(aes(colour = z2)) -> gradientBase
+gradientBase
+```
+
+```{r}
+gradientBase+scale_color_gradient(low="#f67d5b",high="#6600FF")
+```
+
+```{r}
+gradientBase+scale_colour_gradient2(midpoint = 1.5,low="#f67d5b",high="#6600FF")
+```
+
+```{r}
+library(scales)
+show_col(c("red", "green", muted("red"), muted("green")))
+```
+
+```{r}
+gradientBase+scale_color_gradient2(
+  low="#f58220",
+  high="#704a6c",
+  midpoint = 1.5)
+```
+
+```{r}
+gradientBase+scale_color_distiller(
+  direction=1,
+  palette = "PuRd")
+```
+
+```{r}
+gradientBase+scale_color_distiller(
+  type="div",
+  palette = "PRGn")
+```
+
+```{r}
+gradientBase+scale_color_viridis_c()
+```
+
+```{r}
+library(readr)
+InterestRateData <- read_csv("https://raw.githubusercontent.com/tpemartin/github-data/master/InterestRateData.csv")
+
+# 取出變數
+InterestRateData %>% select(
+  銀行,
+  年月,
+  `定存利率-三個月-固定`,
+  `定存利率-一年期-固定`
+) -> allBankData
+
+# 修正class
+allBankData %>% 
+  mutate_at(vars(-銀行,-年月),funs(as.numeric(.))) ->
+  allBankData
+
+# 修正年月
+library(stringr)
+library(lubridate)
+allBankData$年月 %>%
+  str_c("1",.,"/01") %>%
+  ymd()+years(911) -> allBankData$年月
+
+# 移除多餘的row
+allBankData %>% filter(!is.na(年月)) -> allBankData
+
+# 產生利差
+allBankData %>% mutate(利差=`定存利率-一年期-固定`-`定存利率-三個月-固定`) -> allBankData
+
+# 產生平均利率及平均利差
+allBankData %>% 
+  select(年月,`定存利率-三個月-固定`,利差) %>%
+  group_by(年月) %>%
+  summarise(
+    平均利率=mean(`定存利率-三個月-固定`,na.rm=T),
+    平均利差=mean(利差,na.rm = T)) -> averageBankData
+```
+

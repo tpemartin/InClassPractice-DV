@@ -1,0 +1,124 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(readr)
+InterestRateData <- read_csv("https://raw.githubusercontent.com/tpemartin/github-data/master/InterestRateData.csv")
+subsetDataTWbank <- read_csv("https://raw.githubusercontent.com/tpemartin/github-data/master/subsetDataTWbank.csv")
+```
+```{r}
+library(showtext)
+font_add("QYuan","cwTeXQYuan-Medium.ttf") # 新增字體
+showtext_auto(enable=TRUE)
+library(dplyr)
+subsetData <- InterestRateData %>%
+  select(銀行,
+           年月,
+           `定存利率-一個月-固定`,
+           `定存利率-二年期-固定`,
+           `定存利率-三年期-固定`)
+```
+
+```{r}
+TWdate2West <- function(TWdate){
+  library(stringr)
+  library(lubridate)
+  westDate <- str_c("1",TWdate,"/01") # 等於加了1000年及01日
+  westDate <- ymd(westDate)  # recursive definition
+  westDate <- westDate + years(911)
+}
+
+subsetData$西元年月 <- TWdate2West(subsetData$年月)
+```
+
+```{r}
+# 原始資料在每一家銀行開頭又有變數名稱
+subsetData %>% filter(!is.na(西元年月)) -> subsetData
+subsetData[,3:5] %>% mutate_all(as.numeric) -> subsetData[,3:5]
+```
+
+```{r}
+library(ggplot2)
+subsetData %>% filter(銀行=="臺灣銀行") -> subsetDataTWbank
+subsetDataTWbank %>%
+  ggplot(aes(x=西元年月,y=`定存利率-一個月-固定`))
+```
+
+```{r}
+subsetDataTWbank_canvas <- .Last.value
+```
+
+```{r}
+subsetData %>%
+  ggplot(aes(x=西元年月,y=`定存利率-一個月-固定`))
+subsetData_canvas <- .Last.value
+```
+
+```{r}
+subsetDataTWbank_canvas+geom_line()
+```
+
+```{r}
+subsetData_canvas+geom_line()
+```
+```{r}
+subsetDataTWbank_canvas+
+  geom_line()+
+  geom_point()
+```
+
+```{r}
+subsetDataTWbank_canvas+
+  geom_line()+
+  geom_point()
+```
+
+```{r}
+firstBank<-subsetData %>% filter(銀行=="第一銀行")
+subsetDataTWbank_canvas+
+  geom_line()+
+  geom_line(data=firstBank,color='red')
+```
+
+```{r}
+subsetDataTWbank_canvas+
+  geom_line()+
+  geom_line(
+    data=(
+      subsetData %>% filter(銀行=="第一銀行")
+      ),
+    color='red')
+```
+
+```{r}
+subsetDataTWbank_canvas+
+  geom_line()+
+  geom_point(
+    data=(
+      subsetData %>% filter(銀行=="第一銀行") ),color='red')
+```
+
+```{r}
+subsetDataTWbank_canvas+
+  geom_line(size=0.8,linetype="longdash")
+```
+
+```{r}
+subsetDataTWbank_canvas+
+  geom_line(linetype="2451")
+```
+
+```{r}
+subsetData_canvas+
+  geom_line(aes(alpha=銀行))
+```
+
+```{r}
+# 利差
+subsetDataTWbank_canvas+
+  geom_line()+
+  geom_point(mapping=aes() , data= ,)
+```
+
