@@ -56,3 +56,65 @@ p2+theme(
 )
 ```
 
+```{r}
+p2 + theme(
+axis.line.y = element_blank(), #or-> element_line(size = 0)
+axis.ticks.y = element_blank()
+) -> p3
+```
+
+```{r}
+p1 + theme(axis.text = element_text(colour = "blue"), axis.text.x = element_text(hjust=1))
+```
+
+```{r}
+mtcars2 <- mtcars[1:15, ]
+mtcars2$name <- row.names(mtcars2)
+
+ggplot(mtcars2, aes(x = name, y = mpg, fill = name)) + 
+  geom_bar(stat = 'identity', position = "identity") +
+  guides(fill = FALSE) + 
+  theme(axis.text.x = element_text(angle = 90,hjust=0,vjust=0.5)) #angle = 90, vjust=0.5, hjust=0
+```
+
+```{r}
+ggplot(mtcars2, aes(x = name, y = mpg, fill = name)) + 
+  geom_bar(stat = 'identity', position = "identity") +
+  guides(fill = FALSE) + 
+  theme(axis.text.x = element_text(angle=90,
+                                   hjust=1,
+                                   vjust=1)) #angle = 90, vjust=0.5, hjust=0
+```
+
+```{r}
+p3 + theme(axis.title.y = element_text(size = rel(1), angle = 0))
+```
+
+
+```{r}
+library(lubridate)
+library(dplyr)
+library(tidyr)
+library(readr)
+
+# 引入資料
+exData <- read_csv("https://quality.data.gov.tw/dq_download_csv.php?nid=6563&md5_url=9f65bdb6752389dc713acc27e93c1c38")
+
+# 處理時間
+exData$期間 %>% paste0("-01") %>% ymd() -> exData$期間
+
+# 處理資料結構
+exData %>% select(期間, "歐元USD/EUR","韓元KRW/USD","人民幣CNY/USD", "日圓JPY/USD", "新台幣NTD/USD") -> exData2
+exData2 %>% gather(幣別, 匯率, -期間) -> exData2
+
+# 處理變數class
+exData2$幣別 %>% as.factor() -> exData2$幣別
+exData2$匯率 %>% as.numeric() -> exData2$匯率
+
+# 以2017年1月為基期
+exData2 %>% group_by(幣別) %>%
+  mutate(匯率=匯率/匯率[期間==ymd("2017-01-01")]*100) %>% 
+  ungroup() ->
+  exData3
+```
+
