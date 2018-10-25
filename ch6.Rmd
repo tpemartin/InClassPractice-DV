@@ -10,6 +10,23 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
-a<-c(1)
+library(ggplot2)
+library(dplyr)
+library(showtext)
+font_add("QYuan","cwTeXQYuan-Medium.ttf") # 新增字體
+showtext_auto(enable=TRUE)
+theme_set(theme_classic())
+```
+
+```{r}
+p1 <- ggplot(mtcars, aes(wt, mpg)) +
+  geom_point() 
+p1
+```
+
+```{r}
+p1+
+  theme(panel.grid.major.y=element_line())->p1
+p1
 ```
 
