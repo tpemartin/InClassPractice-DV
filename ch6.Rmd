@@ -111,10 +111,27 @@ exData2 %>% gather(幣別, 匯率, -期間) -> exData2
 exData2$幣別 %>% as.factor() -> exData2$幣別
 exData2$匯率 %>% as.numeric() -> exData2$匯率
 
+# 處理歐元
+exData2$匯率[exData2$幣別=="歐元USD/EUR"]<-1/exData2$匯率[exData2$幣別=="歐元USD/EUR"]
+
 # 以2017年1月為基期
 exData2 %>% group_by(幣別) %>%
   mutate(匯率=匯率/匯率[期間==ymd("2017-01-01")]*100) %>% 
   ungroup() ->
   exData3
+```
+
+
+```{r}
+exData2 %>% filter(期間>=ymd("2017-01-01")) %>% ggplot()+
+  geom_line(aes(x=期間,y=匯率,color=幣別))
+```
+
+```{r}
+p <- exData3 %>% 
+  filter(期間>=ymd("2017-01-01")) %>% 
+  ggplot()+
+  geom_line(aes(x=期間,y=匯率,color=幣別))
+p 
 ```
 
