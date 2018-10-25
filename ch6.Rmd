@@ -150,13 +150,17 @@ exData4TW <- exData4 %>% filter(幣別=="新台幣NTD/USD")
 exData4others <- exData4 %>% filter(幣別!="新台幣NTD/USD")
 ```
 
+## 作法一：
+只改顏色，讓台幣較亮眼
 ```{r}
-exData4others %>% 
-  
-  geom_line+
-  geom_line(exData4TW,color, size)
-
 exData4 %>% ggplot(aes(x=期間,y=匯率))+
   geom_line(aes(color=幣別))
 ```
 
+## 作法二：
+用兩個不同exData來畫geom_line, 單獨讓台幣線較粗。
+```{r}
+exData4others %>% ggplot(aes(x=期間,y=匯率))+
+  geom_line(aes(color=幣別))+
+  geom_line(data=exData4TW)
+```
