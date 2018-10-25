@@ -30,3 +30,29 @@ p1+
 p1
 ```
 
+```{r}
+p1+
+  theme(panel.grid.major.y=element_line(color = "#adadad",size = 0.1))->p2
+p2
+```
+
+```{r}
+p1 + theme(axis.line = element_line(size = 3, colour = "grey80"))
+```
+```{r}
+p2
+```
+
+
+```{r}
+p2+theme(
+  axis.line.y = element_blank()
+)
+```
+
+```{r}
+p2+theme(
+  axis.line.y = element_line(size=0)
+)
+```
+
