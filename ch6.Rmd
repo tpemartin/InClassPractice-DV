@@ -135,3 +135,28 @@ p <- exData3 %>%
 p 
 ```
 
+```{r}
+exData3 %>% 
+  filter(期間>=ymd("2017-01-01")) -> exData4
+```
+
+```{r}
+exData4$幣別 %>% levels
+```
+
+# 拆成兩組資料
+```{r}
+exData4TW <- exData4 %>% filter(幣別=="新台幣NTD/USD")
+exData4others <- exData4 %>% filter(幣別!="新台幣NTD/USD")
+```
+
+```{r}
+exData4others %>% 
+  
+  geom_line+
+  geom_line(exData4TW,color, size)
+
+exData4 %>% ggplot(aes(x=期間,y=匯率))+
+  geom_line(aes(color=幣別))
+```
+
