@@ -64,5 +64,6 @@ exData4 %>% ggplot(aes(x=期間,y=匯率))+
 exData4others %>% ggplot(aes(x=期間,y=匯率))+
   geom_line(aes(color=幣別))+
   geom_line(data=exData4TW, aes(color=幣別), size=3)->figureOut
+figureOut
 ggsave(filename="ExchangeRate.png",figureOut)
 ```
