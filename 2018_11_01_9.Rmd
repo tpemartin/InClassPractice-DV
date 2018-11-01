@@ -114,8 +114,25 @@ textData <- data.frame(
   y=c(99,98,94),
   labels=c("人民幣","新台幣","韓元")
 )
-p4+annotate("text",x=textData$x,y=textData$y,label=textData$labels)
+p4+annotate("text",x=textData$x,y=textData$y,label=textData$labels)+guides(color="none",size="none")->p5
 ```
 
+```{r}
+eventData <- data.frame(
+  start=ymd(c("2018-02-01","2017-07-01")),
+  end=ymd(c("2018-07-01","2017-09-01")),
+  name=c("不明","不明")
+)
+p5+annotate("rect",
+            xmin=eventData$start,
+            xmax=eventData$end,
+            ymin=-Inf,
+            ymax=Inf,
+            alpha=0.1,
+            fill=c("pink","blue")
+            )
+
+#eventData
+```
 
 
