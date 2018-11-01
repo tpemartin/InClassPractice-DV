@@ -5,6 +5,10 @@ date: "11/1/2018"
 output: html_document
 ---
 
+
+!!! 今天的課程以 2018_11_01_9.Rmd 為主。
+
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
