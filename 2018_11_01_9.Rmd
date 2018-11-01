@@ -73,5 +73,16 @@ p +
     values=c("#a6bddb","#225ea8","#5e75a6","#4c8f8b","#081d58"))+
   theme(axis.line.y = element_blank(),axis.ticks.y = element_blank())+
   scale_y_continuous(position = "right")+
-  theme(panel.grid.major.y=element_line(color = "#adadad",size = 0.2))
+  theme(panel.grid.major.y=element_line(color = "#adadad",size = 0.2))->p2
 ```
+
+```{r}
+p2+scale_y_continuous(limits=c(85,105))+
+  geom_hline(yintercept=100,color="red")
+```
+
+
+
+
+
+
