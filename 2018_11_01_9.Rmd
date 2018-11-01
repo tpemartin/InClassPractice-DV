@@ -1,0 +1,54 @@
+---
+title: "20181026"
+output: html_notebook
+---
+```{r}
+library(ggplot2)
+library(dplyr)
+library(showtext)
+font_add("QYuan","cwTeXQYuan-Medium.ttf") # 新增字體
+showtext_auto(enable=TRUE)
+theme_set(theme_classic())
+```
+
+```{r}
+library(lubridate)
+library(dplyr)
+library(tidyr)
+library(readr)
+library(ggplot2)
+# 引入資料
+exData <- read_csv("https://quality.data.gov.tw/dq_download_csv.php?nid=6563&md5_url=9f65bdb6752389dc713acc27e93c1c38")
+# 處理時間
+exData$期間 %>% paste0("-01") %>% ymd() -> exData$期間
+# 處理資料結構
+exData %>% select(期間, "歐元USD/EUR","韓元KRW/USD","人民幣CNY/USD", "日圓JPY/USD", "新台幣NTD/USD") -> exData2
+exData2 %>% gather(幣別, 匯率, -期間) -> exData2
+# 處理變數class
+exData2$幣別 %>% as.factor() -> exData2$幣別
+exData2$匯率 %>% as.numeric() -> exData2$匯率
+# 處理歐元
+exData2$匯率[exData2$幣別=="歐元USD/EUR"]<-1/exData2$匯率[exData2$幣別=="歐元USD/EUR"]
+# 以2017年1月為基期
+exData2 %>% group_by(幣別) %>%
+  mutate(匯率=匯率/匯率[期間==ymd("2017-01-01")]*100) %>% 
+  ungroup() ->
+  exData3
+```
+
+
+```{r}
+p <- exData3 %>% 
+  filter(期間>=ymd("2017-01-01")) %>% ggplot()+
+  geom_line(aes(x=期間,y=匯率,color=幣別,size=幣別))
+p 
+```
+
+c("2017-01-01","2017-07-01","2017-09-01","2018-01-01","2018-04-1","2018-07-01")->BreakDates
+
+BreakDates%>% ymd()->BreakDates
+
+
+```{r}
+p +scale_size_manual(values=c(0.5,1,0.5,0.5,2.5))+scale_color_manual(values=c("#a6bddb","#225ea8","#5e75a6","#4c8f8b","#081d58"))+theme(axis.line.y = element_blank(),axis.ticks.y = element_blank())+scale_y_continuous(position = "right")+theme(panel.grid.major.y=element_line(color = "#adadad",size = 0.2))
+```

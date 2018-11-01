@@ -1,0 +1,68 @@
+---
+title: "10-25"
+output: html_notebook
+---
+
+```{r}
+library(lubridate)
+library(dplyr)
+library(tidyr)
+library(readr)
+library(ggplot2)
+library(showtext)
+font_add("QYuan","Andale Mono.ttf") # 新增字體
+showtext_auto(enable=TRUE)
+theme_set(theme_classic()) #設定軸
+
+# 引入資料
+exData <- read_csv("https://quality.data.gov.tw/dq_download_csv.php?nid=6563&md5_url=9f65bdb6752389dc713acc27e93c1c38")
+
+# 處理時間
+exData$期間 %>% paste0("-01") %>% ymd() -> exData$期間
+
+# 處理資料結構
+exData %>% select(期間, "歐元USD/EUR","韓元KRW/USD","人民幣CNY/USD", "日圓JPY/USD", "新台幣NTD/USD") -> exData2
+exData2 %>% gather(幣別, 匯率, -期間) -> exData2
+
+# 處理變數class
+exData2$幣別 %>% as.factor() -> exData2$幣別
+exData2$匯率 %>% as.numeric() -> exData2$匯率
+
+# 處理歐元
+exData2$匯率[exData2$幣別=="歐元USD/EUR"]<-1/exData2$匯率[exData2$幣別=="歐元USD/EUR"]
+
+# 以2017年1月為基期
+exData2 %>% group_by(幣別) %>%
+  mutate(匯率=匯率/匯率[期間==ymd("2017-01-01")]*100) %>% 
+  ungroup() ->
+  exData3
+```
+
+```{r}
+exData3 %>% 
+  filter(期間>=ymd("2017-01-01")) -> exData4
+
+exData4$幣別 %>% levels
+```
+
+# 拆成兩組資料
+```{r}
+exData4TW <- exData4 %>% filter(幣別=="新台幣NTD/USD")
+exData4others <- exData4 %>% filter(幣別!="新台幣NTD/USD")
+```
+
+## 作法一：
+只改顏色，讓台幣較亮眼
+```{r}
+exData4 %>% ggplot(aes(x=期間,y=匯率))+
+  geom_line(aes(color=幣別)) + scale_color_brewer()
+```
+
+## 作法二：
+用兩個不同exData來畫geom_line, 單獨讓台幣線較粗。
+```{r}
+exData4others %>% ggplot(aes(x=期間,y=匯率))+
+  geom_line(aes(color=幣別))+
+  geom_line(data=exData4TW, aes(color=幣別), size=3)->figureOut
+ggsave(filename="ExchangeRate.png",figureOut)
+```
