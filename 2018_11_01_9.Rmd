@@ -87,11 +87,35 @@ p2+scale_y_continuous(limits=c(87,105))+
   scale_size_manual(limits=c("韓元KRW/USD",
                 "人民幣CNY/USD",
                 "新台幣NTD/USD"),
-                values=c(0.5,0.5,1))
+                values=c(0.5,0.5,1)) -> p3
+p3
+```
+
+```{r}
+library(lubridate)
+pointData <- data.frame(
+  期間=c(ymd("2017-01-01")),
+  匯率=c(100)
+)
+pointData
+exData3 %>% select(期間,匯率) %>%
+  summarise_all(funs(class(.)))
 ```
 
 
+```{r}
+p3 + geom_point(data=pointData,aes(x=期間,y=匯率),
+                size=4) -> p4
+```
 
+```{r}
+textData <- data.frame(
+  x=ymd(c("2018-06-01","2018-09-01","2018-08-01")),
+  y=c(99,98,94),
+  labels=c("人民幣","新台幣","韓元")
+)
+p4+annotate("text",x=textData$x,y=textData$y,label=textData$labels)
+```
 
 
 
