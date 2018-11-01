@@ -44,11 +44,34 @@ p <- exData3 %>%
 p 
 ```
 
-c("2017-01-01","2017-07-01","2017-09-01","2018-01-01","2018-04-1","2018-07-01")->BreakDates
 
-BreakDates%>% ymd()->BreakDates
 
 
 ```{r}
-p +scale_size_manual(values=c(0.5,1,0.5,0.5,2.5))+scale_color_manual(values=c("#a6bddb","#225ea8","#5e75a6","#4c8f8b","#081d58"))+theme(axis.line.y = element_blank(),axis.ticks.y = element_blank())+scale_y_continuous(position = "right")+theme(panel.grid.major.y=element_line(color = "#adadad",size = 0.2))
+exData3$幣別 %>% levels
+sizeLimits <- c("韓元KRW/USD","歐元USD/EUR",
+                "人民幣CNY/USD","日圓JPY/USD",
+                "新台幣NTD/USD")
+setdiff(sizeLimits,"歐元USD/EUR")
+```
+
+
+```{r}
+p +
+  scale_size_manual(
+    limits=c("韓元KRW/USD","歐元USD/EUR",
+                "人民幣CNY/USD","日圓JPY/USD",
+                "新台幣NTD/USD"),
+    values=c(0.5,1,0.5,0.5,2.5), #values = function(limits)
+    breaks=c("韓元KRW/USD",
+                "人民幣CNY/USD","日圓JPY/USD",
+                "新台幣NTD/USD") # 要在圖例上（或軸）突顯的部份
+    )+
+  scale_color_manual(
+    limits=sizeLimits,
+    breaks=setdiff(sizeLimits,"歐元USD/EUR"),
+    values=c("#a6bddb","#225ea8","#5e75a6","#4c8f8b","#081d58"))+
+  theme(axis.line.y = element_blank(),axis.ticks.y = element_blank())+
+  scale_y_continuous(position = "right")+
+  theme(panel.grid.major.y=element_line(color = "#adadad",size = 0.2))
 ```
