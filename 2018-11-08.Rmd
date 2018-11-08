@@ -1,0 +1,84 @@
+---
+title: ''
+author: "林茂廷"
+date: "11/8/2018"
+output: html_document
+---
+
+```{r}
+library(showtext)
+font_add("QYuan","cwTeXQYuan-Medium.ttf") # 新增字體
+showtext_auto(enable=TRUE) #啟用字體
+
+library(ggplot2)
+library(dplyr)
+library(lubridate)
+library(readr)
+theme_set(theme_classic())
+```
+
+```{r}
+library(stringr)
+startSalaryTopCat<- read_csv("https://raw.githubusercontent.com/tpemartin/github-data/master/startSalaryTopCat.csv")
+
+startSalaryTopCat %>% filter(
+  str_detect(大職業別,"部門")
+) -> dataTwoSectors
+```
+
+```{r}
+dataTwoSectors %>% ggplot(aes(x=大職業別))+
+  geom_col(aes(y=`經常性薪資-薪資`))->p1
+p1
+```
+
+```{r}
+p1+labs(x=NULL,y="月薪（元）")
+```
+
+
+```{r}
+classSample<- read_csv("https://raw.githubusercontent.com/tpemartin/github-data/master/classSample.csv")
+classSample %>%
+  mutate_at(
+    vars(-c(3,4)),
+    funs(
+      as.factor(.)
+    )
+  ) -> classSample
+```
+
+```{r}
+head(classSample)
+```
+
+```{r}
+classSample %>% 
+  filter(入學年=="107") ->
+  freshmen
+
+freshmen %>% 
+  ggplot(aes(x=性別))+
+  geom_bar()->p2
+
+p2
+```
+
+```{r}
+startSalaryTopCat$部門<-"服務業部門"
+startSalaryTopCat$部門[2:7]<-"工業部門"
+startSalarySecCat <- startSalaryTopCat[-c(1,2,8),]
+```
+
+```{r}
+startSalarySecCat %>% ggplot(aes(x=大職業別))+
+  geom_col(aes(y=`經常性薪資-薪資`,fill=部門))+
+  theme(
+    axis.text.x=
+      element_text(
+        angle=90,
+        hjust=1,
+        vjust=0.5)) -> p3
+p3
+```
+
