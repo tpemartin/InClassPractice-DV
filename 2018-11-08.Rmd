@@ -181,8 +181,69 @@ freshmen4 %>% select(有課外活動,性別,權重)
 freshmen4 %>% 
   ggplot(aes(x=有課外活動))+
   geom_bar(aes(fill=性別,weight=權重),
-           position = "dodge",
-           stat 
+           position = "dodge"
            ) 
+```
+
+
+```{r}
+freshmen4 %>% 
+  ggplot(aes(x=有課外活動))+
+  geom_bar(aes(fill=性別),
+           position = "dodge"
+           ) 
+```
+
+```{r}
+p4+
+  coord_flip()
+```
+
+```{r}
+p4+
+  scale_y_continuous(position = "right")->p5
+p5
+```
+
+```{r}
+p5+
+  coord_flip()+
+  scale_x_discrete(
+    limit=rev(xlim)
+  )
+```
+
+```{r}
+startSalarySecCat %>% 
+  ggplot(aes(x=大職業別))+
+  theme(
+    axis.text.x=
+      element_text(
+        angle=90,
+        hjust=1,
+        vjust=0.5))-> p5base
+p5base
+```
+
+
+```{r}
+p5base + 
+  geom_col( #基本長條圖含寬度設定
+    aes(y=`經常性薪資-薪資`,fill=部門),
+    width=0.8
+    )+
+  scale_y_continuous( #去除長條底部留白，並將軸線置右
+    expand=expand_scale(mult = c(0,0.10)),
+    position="right" 
+    )+
+  scale_x_discrete(limit=rev(xlim))+ #x分類排序
+  theme(axis.text=element_text(size=7))+ #縮小軸線標示文字字體
+  coord_flip()+ #翻轉兩軸
+  labs(x=NULL,y=NULL,fill=NULL)+ #去除mapping標題
+  theme(axis.text.x = #數字調整水平置中 #coord_flip之後的軸用**視覺上的軸**來定義x/y
+          element_text(
+            angle=0,
+            hjust=0.5))-> p9
+p9
 ```
 
