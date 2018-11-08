@@ -82,3 +82,107 @@ startSalarySecCat %>% ggplot(aes(x=大職業別))+
 p3
 ```
 
+```{r}
+freshmen %>% 
+  ggplot(aes(x=性別))+
+  geom_bar(aes(fill=性別))->p2
+
+p2
+```
+
+```{r}
+freshmen %>%
+  mutate(有課外活動=(本學期目前已參加之課外活動!="無")) ->
+  freshmen2
+
+freshmen2 %>%
+  ggplot(aes(x=有課外活動))+
+  geom_bar(aes(fill=性別)) 
+```
+
+```{r}
+freshmen2 %>%
+  ggplot(aes(x=有課外活動))+
+  geom_bar(aes(fill=性別),
+           position = "dodge"
+           ) 
+```
+
+```{r}
+freshmen2 %>%
+  ggplot(aes(x=有課外活動))+
+  geom_bar(aes(fill=性別),
+           position = "fill",
+           stat 
+           )+
+  scale_fill_brewer(type="qual")
+```
+
+```{r}
+startSalarySecCat$`經常性薪資-薪資` %>% 
+  sort(., decreasing=T,
+       index.return=T) -> sortOut
+xlim <- startSalarySecCat$大職業別[sortOut$ix]
+
+p3+scale_x_discrete(
+  limits=xlim
+)->p4
+p4
+```
+```{r}
+startSalarySecCat %>% colnames
+```
+
+```{r}
+startSalarySecCat$`大學-薪資` %>% 
+  sort(., decreasing=T,
+       index.return=T) -> sortOut
+xlim <- startSalarySecCat$大職業別[sortOut$ix]
+xlim
+
+startSalarySecCat %>%
+  ggplot(aes(x=大職業別))+
+  geom_col(aes(y=`大學-薪資`,fill=部門))+
+  scale_x_discrete(
+  limits=xlim
+)+
+  theme(
+    axis.text.x=
+      element_text(
+        angle=90,
+        hjust=1,
+        vjust=0.5))->p4b
+p4b
+```
+
+```{r}
+freshmen2 %>% 
+  mutate(性別=ordered(性別,
+                      levels=c("女","男"))) -> freshmen3
+
+freshmen3 %>%
+  ggplot(aes(x=有課外活動))+
+  geom_bar(aes(fill=性別),
+           position = "fill",
+           stat 
+           )+
+  scale_fill_manual(
+    limit=c("女","男"),
+    values=c("red","blue")
+  )
+```
+
+```{r}
+freshmen2 %>%
+  # 依**有課外活動**分群，群內的每筆權重為 1/群內人數
+  group_by(有課外活動) %>% 
+  mutate(權重=1/n()) -> freshmen4 # n(): 計算群內樣本數
+freshmen4 %>% select(有課外活動,性別,權重)
+freshmen4 %>% 
+  ggplot(aes(x=有課外活動))+
+  geom_bar(aes(fill=性別,weight=權重),
+           position = "dodge",
+           stat 
+           ) 
+```
+
