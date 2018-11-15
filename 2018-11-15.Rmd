@@ -1,0 +1,73 @@
+---
+title: "Untitled"
+author: "林茂廷"
+date: "11/15/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(showtext)
+font_add("QYuan","cwTeXQYuan-Medium.ttf") # 新增字體
+showtext_auto(enable=TRUE) #啟用字體
+
+library(ggplot2)
+library(dplyr)
+library(lubridate)
+library(readr)
+theme_set(theme_classic())
+```
+
+```{r}
+startSalaryTopCat<- read_csv("https://raw.githubusercontent.com/tpemartin/github-data/master/startSalaryTopCat.csv")
+
+startSalaryTopCat %>% filter(
+  str_detect(大職業別,"部門")
+) -> dataTwoSectors
+```
+
+
+```{r}
+startSalaryTopCat$部門<-"服務業部門"
+startSalaryTopCat$部門[2:7]<-"工業部門"
+startSalarySecCat <- startSalaryTopCat[-c(1,2,8),]
+```
+
+```{r}
+startSalarySecCat %>% ggplot(aes(x=大職業別))+
+  geom_col(aes(y=`經常性薪資-薪資`,fill=部門))+
+  theme(
+    axis.text.x=
+      element_text(
+        angle=90,
+        hjust=1,
+        vjust=0.5)) -> p3
+p3
+```
+
+
+```{r}
+startSalarySecCat$`經常性薪資-薪資` %>% 
+  sort(., decreasing=T,
+       index.return=T) -> sortOut
+xlim <- startSalarySecCat$大職業別[sortOut$ix]
+
+p3+scale_x_discrete(
+  limits=xlim
+)->p4
+p4
+```
+
+
+```{r}
+p4+scale_y_continuous(
+  expand=expand_scale(mult = c(0,0.1))
+)
+p4+scale_y_continuous(
+  expand=c(0,0))
+)
+```
+
