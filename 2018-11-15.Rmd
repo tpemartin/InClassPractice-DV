@@ -71,3 +71,134 @@ p4+scale_y_continuous(
 )
 ```
 
+```{r}
+dataTwoSectors %>% ggplot(aes(x=大職業別))+
+  geom_col(aes(y=`經常性薪資-薪資`))->p1
+p1
+```
+
+```{r}
+p1+
+  scale_y_continuous(
+    limits=c(20000,32000)
+  )
+```
+
+```{r}
+library(scales)
+p1+scale_y_continuous(
+  limits=c(22000,30000),
+  oob=rescale_none)
+```
+
+```{r}
+library(scales)
+p1+scale_y_continuous(
+  limits=c(22000,30000),
+  oob=squish)
+```
+
+```{r}
+startSalarySecCat %>% 
+  ggplot(aes(x=大職業別))+
+  theme(
+    axis.text.x=
+      element_text(
+        angle=90,
+        hjust=1,
+        vjust=0.5))-> p5base
+```
+
+```{r}
+p5base + geom_col(
+    aes(y=`經常性薪資-薪資`,fill=部門),
+    width=0.5)-> p7
+p7
+```
+
+```{r}
+p5base + 
+  geom_col( #基本長條圖含寬度設定
+    aes(y=`經常性薪資-薪資`,fill=部門),
+    width=0.8
+    )+
+  scale_y_continuous( #去除長條底部留白，並將軸線置右
+    expand=expand_scale(mult = c(0,0.10)),
+    position="right" 
+    )+
+  scale_x_discrete(limit=rev(xlim))+ #x分類排序
+  theme(axis.text=element_text(size=7))+ #縮小軸線標示文字字體
+  coord_flip()+ #翻轉兩軸
+  labs(x=NULL,y=NULL,fill=NULL)+ #去除mapping標題
+  theme(axis.text.x = #數字調整水平置中 #coord_flip之後的軸用**視覺上的軸**來定義x/y
+          element_text(
+            angle=0,
+            hjust=0.5))-> p9
+p9
+```
+
+# ch9
+
+```{r}
+# 匯率以2017年1月為基期
+exData7 <- read_csv("https://raw.githubusercontent.com/tpemartin/github-data/master/exData7.csv")
+```
+
+```{r}
+exData7 %>%
+  mutate(
+    升值=(月升值率>0)
+  ) %>%
+  filter(幣別=="新台幣NTD/USD",年份 %>% between(1990,1995)) -> exDataTWpost90s
+```
+
+```{r}
+exDataTWpost90s %>%
+  ggplot(aes(x=年份)) +
+  geom_bar(aes(weight=升值)) +
+  geom_hline(yintercept=6,color="red") -> p1
+p1
+```
+
+```{r}
+p1+
+  scale_y_continuous(
+    limits=c(0,13),
+    breaks=c(0,2,4,6,8,10,12)
+  ) -> p1
+p1
+```
+
+```{r}
+exDataTWpost90s %>%
+  mutate(
+    升值=as.factor(升值)
+  ) -> exDataTWpost90s
+exDataTWpost90s %>%
+  mutate(
+    升值=ordered(升值,levels=c("FALSE","TRUE"))
+  ) ->
+  exDataTWpost90s
+```
+
+```{r}
+exDataTWpost90s %>%
+  ggplot(aes(x=年份)) +
+  geom_bar(aes(fill=ordered(升值))) -> p2
+p2
+```
+
+```{r}
+p2 +
+  scale_fill_manual(
+    labels=c("貶值","升值"),
+    values=c("#ccd8e5","#ffa500")
+  )+
+  labs(fill=NULL)+
+  geom_hline(yintercept=6, color="red",alpha=0.3)+
+  scale_y_continuous(
+    limits=c(0,13),
+    breaks=c(0,2,4,6,8,10,12)
+  )
+```
+
