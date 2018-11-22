@@ -7,6 +7,15 @@ output: html_notebook
 library(tidyverse)
 library(lubridate)
 library(scales)
+library(showtext)
+font_add("QYuan","cwTeXQYuan-Medium.ttf") # 新增字體
+showtext_auto(enable=TRUE) #啟用字體
+
+library(ggplot2)
+library(dplyr)
+library(lubridate)
+library(readr)
+theme_set(theme_classic())
 ```
 #資料引用
 ```{r}
@@ -36,6 +45,27 @@ often_sport %>%
         hjust=1,
         vjust=0.5))-> p1
 p1
+p1+
+  annotate(
+    "text",
+    x=often_sport$運動項目,
+    y=often_sport$`消耗熱量(大卡/公斤體重/小時)`-0.3,
+    label=often_sport$運動項目,
+    angle=90,
+    size=3,
+    hjust=1,
+    color="white"
+  )+
+  guides(fill="none")+
+  theme(
+    axis.text.x=element_blank(),
+    axis.ticks.x=element_blank()
+  )+
+  labs(x=NULL)+
+  scale_y_continuous(
+    expand=expand_scale(mult=0)
+  )
+length(often_sport$運動項目)
 ```
 #長條圖排序
 ```{r}
@@ -71,6 +101,10 @@ p3
 
 ```{r}
 p3
+```
+
+```{r}
+p3+annotate()
 ```
 
 
