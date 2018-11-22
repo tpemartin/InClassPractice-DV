@@ -1,0 +1,90 @@
+
+
+```{r, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, fig.show='asis',fig.showtext=TRUE)
+library(knitr)
+klippy::klippy()
+
+library(showtext)
+font_add("QYuan","cwTeXQYuan-Medium.ttf") # 新增字體
+showtext_auto(enable=TRUE) #啟用字體
+
+library(ggplot2)
+library(dplyr)
+library(lubridate)
+library(readr)
+library(stringr)
+theme_set(theme_classic())
+```
+
+## 通識、體育分配
+
+```{r}
+load("tileExample1.Rda")
+dfend4 %>%
+  ggplot()+
+  stat_bin2d(aes(x=實通數,y=實體數))+
+  scale_fill_gradient2(low="#f7f9f9",mid="#ffae19",high="#a01b1b",
+                       midpoint = 800)
+
+```
+
+## 考題相關性
+
+
+```{r}
+load("tileExample2.Rda")
+#library(ggiraph)
+questionsIntDF %>%
+  ggplot(aes(x=Var1,y=Var2))+
+  geom_tile(
+    aes(fill=corr,
+        width=Var1acc,height=Var2acc)
+    )+
+  scale_fill_distiller()+
+  theme(axis.text.x=element_text(
+    angle = 45,
+    hjust=1
+  ))+
+  scale_x_discrete(
+    limits=ansNames,
+    breaks=ansNames
+  )+
+  scale_y_discrete(
+    limits=ansNames,
+    breaks=ansNames
+  )+
+  labs(
+    x=NULL, y=NULL, corr="相關度"
+  ) -> gg1;gg1
+```
+
+
+```{r}
+
+library(ggiraph)
+questionsIntDF %>%
+  ggplot(aes(x=Var1,y=Var2))+
+  geom_tile_interactive(
+    aes(fill=corr,tooltip=tooltip,
+        width=Var1acc,height=Var2acc)
+    )+
+  scale_fill_distiller()+
+  theme(axis.text.x=element_text(
+    angle = 45,
+    hjust=1
+  ))+
+  scale_x_discrete(
+    limits=ansNames,
+    breaks=ansNames
+  )+
+  scale_y_discrete(
+    limits=ansNames,
+    breaks=ansNames
+  )+
+  labs(
+    x=NULL, y=NULL, corr="相關度"
+  ) -> gg1
+girafe(ggobj = gg1)
+```
+
