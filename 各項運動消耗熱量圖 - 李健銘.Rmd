@@ -1,0 +1,76 @@
+---
+title: "運動"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(lubridate)
+library(scales)
+```
+#資料引用
+```{r}
+sport <- read_csv("https://quality.data.gov.tw/dq_download_csv.php?nid=8494&md5_url=46af7be0074bd734abc6b2532e78afa8")
+```
+#篩選資料
+```{r}
+sport %>% 
+  select(運動項目,"消耗熱量(大卡/公斤體重/小時)") %>% 
+    arrange(desc(`消耗熱量(大卡/公斤體重/小時)`)) %>%
+    filter(運動項目=="上樓梯"|運動項目=="下樓梯"|運動項目=="跳繩(慢)"|
+               運動項目=="慢跑(8公里/小時)"|運動項目=="有氧舞蹈"|運動項目=="游泳(慢)"|
+               運動項目=="籃球(半場)"|運動項目=="快走、健走(6.0公里/小時)"|
+                 運動項目=="乒乓球"|運動項目=="騎腳踏車(一般速度，10公里/小時)"|
+                 運動項目=="排球"|運動項目=="瑜珈") ->often_sport
+```
+
+#繪圖
+```{r}
+often_sport %>%
+  ggplot(aes(y= `消耗熱量(大卡/公斤體重/小時)`,x=運動項目))+
+  theme_classic() +
+  geom_col(aes(fill = 運動項目))+
+  theme(axis.text.x=
+        element_text(
+        angle=90,
+        hjust=1,
+        vjust=0.5))-> p1
+p1
+```
+#長條圖排序
+```{r}
+often_sport$`消耗熱量(大卡/公斤體重/小時)` %>%
+  sort(., decreasing = F,
+       index.return=T) -> sortOut
+xlim <- often_sport$運動項目[sortOut$ix]
+
+p1+
+  scale_x_discrete(
+    limits=xlim
+  ) -> p2
+p2
+```
+
+```{r}
+png("各項運動消耗熱量.png",width = 1080,height=720)
+p2+
+  scale_y_continuous(position = "right",
+                     expand = expand_scale(mult = c(0)))+
+  coord_flip()+
+  theme(axis.line.x = element_blank(),
+        axis.text.x = element_text(angle = 360,
+                                   hjust = 0.4,
+                                   vjust = 1),
+        axis.text.y = element_text(size = 16),
+        axis.ticks = element_blank(),
+        panel.grid.major.x = element_line(color = "gray"))+
+  guides(fill="none") ->p3
+
+p3
+```
+
+```{r}
+p3
+```
+
+
