@@ -1,0 +1,70 @@
+---
+title: "2018-11-22HW"
+output: html_notebook
+---
+```{r}
+library(readxl)
+Visitor<-Visitor_江芊芊
+col_types = c("date", "numeric", "numeric", 
+        "numeric", "numeric", "numeric", 
+        "numeric", "numeric")
+```
+
+```{r}
+
+library(showtext)
+font_add("QYuan","arial.ttf") # 新增字體
+showtext_auto(enable=TRUE)
+```
+```{r}
+library(dplyr)
+Visitor %>%
+  select(年份,
+           亞洲總計,
+           美洲總計,
+           歐洲總計,
+           大洋洲總計,
+           非洲總計,
+           總計)->tourismData
+```
+```{r}
+library(ggplot2)
+```
+
+```{r}
+library(tidyr)
+```
+
+```{r}
+tourismData %>% gather(項目,人次,-年份) -> arrival
+```
+
+
+```{r}
+arrival %>%
+  group_by(項目) %>%
+  mutate(
+    人次=人次/first(人次)
+  ) -> arrival
+
+arrival %>% filter(!(項目 %in% c("亞洲總計","總計"))) -> arrival
+ 
+arrival %>% ggplot(aes(x=年份,y=人次))+
+  geom_line(aes(color=項目),linetype="longdash",size=1)->aa; aa
+```
+```{r}
+aa+
+  theme(text=element_text(size=10,  family="QYuan"))+
+  theme_classic()+
+  scale_color_manual(
+    values=c("#8dd3c7","#d6604d","#fc4e2a","#31a354","#377eb8","red")
+)->figureOut
+figureOut
+```
+
+```{r}
+ggsave(filename="Arrivals Rate.png",figureOut)
+```
+
+
+
