@@ -9,22 +9,36 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+```{r}
+library(showtext)
+font_add("QYuan","cwTeXQYuan-Medium.ttf") # 新增字體
+showtext_auto(enable=TRUE) #啟用字體
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+library(ggplot2)
+library(dplyr)
+library(lubridate)
+library(readr)
+theme_set(theme_classic())
 ```
 
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r}
+# 匯率以2017年1月為基期
+exData7 <- read_csv("https://raw.githubusercontent.com/tpemartin/github-data/master/exData7.csv")
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r}
+exData7 %>%
+  mutate(
+    升值=(月升值率>0)
+  ) -> exData7
+exData7 %>%
+  filter(幣別=="新台幣NTD/USD",年份 %>% between(1990,1995)) -> exDataTWpost90s
+```
+
+```{r}
+exDataTWpost90s %>% 
+  ggplot(aes(x=月升值率))+
+  geom_histogram() -> p3
+p3
+```
+
