@@ -41,4 +41,135 @@ exDataTWpost90s %>%
   geom_histogram() -> p3
 p3
 ```
+```{r}
+binsNumber<- grDevices::nclass.FD(exDataTWpost90s$月升值率)
+binsNumber
+
+exDataTWpost90s %>% 
+  ggplot(aes(x=月升值率))+
+  geom_histogram(bins=binsNumber) -> p5
+p5
+```
+
+```{r}
+exData7 %>%
+  filter(年份 %>% between(1990,2018)) %>%
+  na.omit ->
+  exData8
+```
+
+```{r}
+exData8 %>% filter(幣別=="新台幣NTD/USD") %>%
+{grDevices::nclass.FD(.$月升值率)} -> binsNumber2
+
+#exData8 %>% filter(月升值率< -0.3)
+
+exData8 %>%
+  ggplot(aes(x=月升值率))+
+  geom_freqpoly(
+    aes(color=幣別),
+    bins=binsNumber2
+  ) -> p7
+p7
+```
+
+```{r}
+exData8 %>%
+  ggplot(aes(x=月升值率))+
+  geom_histogram(
+    aes(fill=幣別),
+    bins=binsNumber2,position="dodge"
+  ) 
+```
+
+```{r}
+p7+
+  scale_x_continuous(
+    limits = c(-0.15,0.15)
+  )
+```
+
+```{r}
+exData8 %>% group_by(幣別) %>%
+  mutate(權重=1/n()) %>%
+  ungroup -> exData9
+
+exData9 %>%
+  ggplot(aes(x=月升值率))+
+  geom_freqpoly(
+    aes(color=幣別,weight=權重),
+    bins=binsNumber2
+  ) -> p8
+p8
+```
+
+```{r}
+library(readr)
+library(dplyr)
+library(lubridate)
+libraryData <- read_csv("https://raw.githubusercontent.com/tpemartin/github-data/master/libraryData.csv")
+libraryData %>%
+  mutate(
+    月=month(借閱時間)
+  ) %>% 
+  select(
+    月,讀者年級
+  ) -> monthGrades
+```
+
+```{r}
+monthGrades %>%
+  ggplot(aes(x=月))+
+  geom_bar(aes(fill=as.factor(讀者年級),
+               group=讀者年級),position="dodge")+
+  scale_x_continuous(
+    breaks=c(1:12)
+  )
+```
+
+```{r}
+monthGrades %>%
+  ggplot(aes(x=月))+
+  geom_freqpoly(aes(color=as.factor(讀者年級)),stat="count")+
+  scale_x_continuous(
+    breaks=c(1:12)
+  )
+```
+
+```{r}
+libraryData %>%
+  group_by(學號,讀者年級) %>%
+  summarise(
+    借閱次=n(),
+    學院=first(學院)
+  ) -> libraryEachGrade
+```
+
+```{r}
+libraryEachGrade %>% group_by(讀者年級) %>%
+  mutate(權重=1/n()) -> libraryEachGrade
+
+libraryEachGrade %>% group_by(讀者年級) %>%
+  summarise(
+    binsNumber=grDevices::nclass.FD(借閱次)
+  )
+```
+
+```{r}
+libraryEachGrade %>%  
+  ggplot(aes(x=借閱次))+
+  geom_freqpoly(aes(color=as.factor(讀者年級),weight=權重),bins=50)
+```
+
+```{r}
+libraryEachGrade %>%
+  ggplot(aes(x=as.factor(讀者年級)))+
+  geom_boxplot(aes(y=借閱次))->p9; p9
+```
+
+```{r}
+libraryEachGrade %>%  
+  ggplot(aes(x=借閱次))+
+  stat_ecdf
+```
 
