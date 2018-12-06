@@ -51,3 +51,12 @@ gg1 %>%
 gp1
 ```
 
+```{r}
+gp1[["x"]][["layout"]][["plot_bgcolor"]] <- "blue"
+gp1
+```
+
+```{r}
+api_create(gp1,filename="圖書借閱與月份",fileopt="new")
+```
+
