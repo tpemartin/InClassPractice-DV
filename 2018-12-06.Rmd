@@ -1,0 +1,53 @@
+---
+title: "Untitled"
+author: "林茂廷"
+date: "12/6/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(showtext)
+font_add("QYuan","cwTeXQYuan-Medium.ttf") # 新增字體
+showtext_auto(enable=TRUE) #啟用字體
+
+library(ggplot2)
+library(dplyr)
+library(lubridate)
+library(readr)
+theme_set(theme_classic())
+```
+
+```{r}
+library(readr)
+library(dplyr)
+library(lubridate)
+library(ggplot2)
+libraryData <- read_csv("https://raw.githubusercontent.com/tpemartin/github-data/master/libraryData.csv")
+libraryData %>%
+  mutate(
+    月=month(借閱時間)
+  ) %>% 
+  select(
+    月,讀者年級
+  ) -> monthGrades
+
+monthGrades %>%
+  ggplot(aes(x=月))+
+  geom_freqpoly(aes(color=as.factor(讀者年級)),stat="count")+
+  scale_x_continuous(
+    breaks=c(1:12)
+  )-> gg1
+gg1
+```
+
+```{r}
+library(plotly)
+gg1 %>% 
+  ggplotly -> gp1
+gp1
+```
+
