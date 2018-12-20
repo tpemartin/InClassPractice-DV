@@ -18,7 +18,7 @@ theme_set(theme_classic())
 
 ```{r}
 
-Students <- read_csv("106_students.csv")
+Students <- read_csv("106_students - Chou Tim.csv")
 
 ```
 ```{r}
@@ -143,3 +143,4 @@ NtpuGender2
 ggsave(filename = "NtpuGender.png",NtpuGender,width = 10)
 ```
 
+## ggplotly
