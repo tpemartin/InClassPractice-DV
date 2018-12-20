@@ -1,0 +1,145 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+```{r}
+library(showtext)
+font_add("QYuan","cwTeXQYuan-Medium.ttf") # 新增字體
+showtext_auto(enable=TRUE) #啟用字體
+
+library(ggplot2)
+library(dplyr)
+library(lubridate)
+library(readr)
+theme_set(theme_classic())
+```
+
+
+
+```{r}
+
+Students <- read_csv("106_students.csv")
+
+```
+```{r}
+Students %>% filter(學校名稱=="國立臺北大學")->NTPU
+```
+
+```{r}
+NTPU %>% filter(等級別=="B 學士",`日間∕進修別`=="D 日")->NTPUB
+```
+
+```{r}
+NTPUB[,c(7:22)] %>% mutate_all(as.numeric)-> NTPUB[,c(7:22)]
+```
+
+
+```{r}
+NTPUB %>% mutate(
+  男生=一年級男生+二年級男生+三年級男生+四年級男生,
+  女生=一年級女生+二年級女生+三年級女生+四年級女生,
+  總數=男生+女生,
+  男生比例=round(男生/總數*100),
+  女生比例=round(女生/總數*100),
+  差距=abs(round(男生比例-女生比例)))%>% select(
+    學校代碼:等級別,男生:差距,everything()
+  ) ->NTPUB
+
+```
+
+
+```{r}
+
+NTPUB$男生比例 %>%
+  sort(., decreasing = T,
+       index.return=T)-> sortOut
+xlim<- NTPUB$科系名稱[sortOut$ix]
+```
+
+```{r}
+NTPUB %>% filter(科系名稱!="電機工程學系",科系名稱!="通訊工程學系",科系名稱!="資訊工程學系" ,科系名稱!="統計學系",科系名稱!="經濟學系",科系名稱!="歷史學系")->NTPUB1
+```
+
+```{r}
+NTPUB %>% filter(科系名稱=="電機工程學系"|科系名稱=="通訊工程學系"|科系名稱=="資訊工程學系" |科系名稱=="統計學系"|科系名稱=="經濟學系"|科系名稱=="歷史學系")->NTPUB2
+```
+
+```{r}
+NTPUB %>%ggplot()+
+  annotate("segment",x =NTPUB1$男生比例,xend = NTPUB1$女生比例,
+            y = NTPUB1$科系名稱,yend = NTPUB1$科系名稱,size=1.5,alpha=0.3,color="#b2182b")+
+  annotate("segment",x =NTPUB2$男生比例,xend = NTPUB2$女生比例,
+            y = NTPUB2$科系名稱,yend = NTPUB2$科系名稱,size=1.5,alpha=0.3,color="#053061")+
+  geom_hline(yintercept = 1:18,alpha=0.05)+
+  geom_point(aes(x=男生比例,y=科系名稱),color="#053061")+
+  theme(axis.title = element_blank())+
+  scale_y_discrete(limits=xlim) +
+  theme(axis.line.y = element_blank(),axis.ticks.y = element_blank())->p1
+p1
+```
+
+
+```{r}
+p1+geom_point(aes(x=女生比例,y=科系名稱),color="#b2182b")->p2
+p2
+```
+```{r}
+xlim
+```
+```{r}
+NTPUB %>% filter(科系名稱!="電機工程學系",科系名稱!="通訊工程學系",科系名稱!="資訊工程學系" ,科系名稱!="統計學系",科系名稱!="經濟學系",科系名稱!="歷史學系")->NTPUB1
+```
+
+```{r}
+NTPUB %>% filter(科系名稱=="電機工程學系"|科系名稱=="通訊工程學系"|科系名稱=="資訊工程學系" |科系名稱=="統計學系"|科系名稱=="經濟學系"|科系名稱=="歷史學系")->NTPUB2
+```
+
+```{r}
+c("0%",
+  "50%",
+  "100%")->break1
+c(0,
+  50,
+  99)->break2
+break2 %>% as.numeric()->break2
+```
+
+```{r}
+p2+annotate("text",x=NTPUB1$男生比例-4,y=NTPUB1$科系名稱,label=NTPUB1$男生比例,color="#053061",size=2.5)+
+  annotate("text",x=NTPUB1$男生比例-2,y=NTPUB1$科系名稱,label="%",color="#053061",size=2.5)+
+  annotate("text",x=NTPUB1$女生比例+2,y=NTPUB1$科系名稱,label=NTPUB1$女生比例,color="#b2182b",size=2.5)+
+  annotate("text",x=NTPUB1$女生比例+4,y=NTPUB1$科系名稱,label="%",color="#b2182b",size=2.5)+
+  annotate("text",x=NTPUB2$男生比例+2,y=NTPUB2$科系名稱,label=NTPUB2$男生比例,color="#053061",size=2.5)+
+  annotate("text",x=NTPUB2$男生比例+4,y=NTPUB2$科系名稱,label="%",color="#053061",size=2.5)+
+  annotate("text",x=NTPUB2$女生比例-4,y=NTPUB2$科系名稱,label=NTPUB2$女生比例,color="#b2182b",size=2.5)+
+  annotate("text",x=NTPUB2$女生比例-2,y=NTPUB2$科系名稱,label="%",color="#b2182b",size=2.5)+
+  annotate("text",x=94,y=2,label="男性",size=4,color="#053061")+
+  annotate("text",x=6,y=2,label="女性",size=4,color="#b2182b")+
+  annotate("segment",x=89,xend=92,y=1,yend=1.6,color="#053061")+
+  annotate("segment",x=11,xend=8,y=1,yend=1.6,color="#b2182b")+
+  scale_x_continuous(breaks =break2, labels = break1,limits = c(0,100))-> NtpuGender
+NtpuGender
+```
+```{r}
+p2+annotate("text",x=NTPUB1$男生比例-2,y=NTPUB1$科系名稱,label=NTPUB1$男生比例,color="#053061",size=2.5)+
+  annotate("text",x=NTPUB1$女生比例+2,y=NTPUB1$科系名稱,label=NTPUB1$女生比例,color="#b2182b",size=2.5)+
+  annotate("text",x=NTPUB2$男生比例+2,y=NTPUB2$科系名稱,label=NTPUB2$男生比例,color="#053061",size=2.5)+
+  annotate("text",x=NTPUB2$女生比例-2,y=NTPUB2$科系名稱,label=NTPUB2$女生比例,color="#b2182b",size=2.5)+
+  annotate("text",x=89,y=2,label="男性",size=3,color="#053061")+
+  annotate("text",x=11,y=2,label="女性",size=3,color="#b2182b")+
+  annotate("segment",x=89,xend=89,y=1,yend=1.6,color="#053061")+
+  annotate("segment",x=11,xend=11,y=1,yend=1.6,color="#b2182b")+
+  theme(axis.line.x=element_blank())+
+  theme(axis.text.x = element_blank())+
+  theme(axis.ticks.x = element_blank())+
+  annotate("segment",x=0,xend=0,y=1,yend=18,alpha=0.5)+
+  annotate("segment",x=100,xend=100,y=1,yend=18,alpha=0.5)+
+  annotate("text",x=0,y=0.65,label="0%",size=3)+
+  annotate("text",x=100,y=0.65,label="100%",size=3)-> NtpuGender2
+NtpuGender2
+```
+
+```{r}
+ggsave(filename = "NtpuGender.png",NtpuGender,width = 10)
+```
+
