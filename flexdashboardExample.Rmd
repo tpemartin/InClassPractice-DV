@@ -1,0 +1,41 @@
+---
+title: "我的1st Dashboard"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(plotly)
+```
+
+Column {data-width=650}
+-----------------------------------------------------------------------
+
+### Chart A
+
+```{r}
+#https://plot.ly/~PatrickMerlot/290
+
+api_download_plot("290","PatrickMerlot") %>% layout
+```
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+### Chart B
+
+```{r}
+#https://plot.ly/~caluchko/128
+api_download_plot("128","caluchko") %>% layout
+```
+
+### Chart C
+
+```{r}
+#https://plot.ly/~gjbex/38
+api_download_plot("38","gjbex") %>% layout
+```
+
