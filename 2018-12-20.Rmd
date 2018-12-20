@@ -47,7 +47,7 @@ monthGrades %>%
   )-> gg1
 gg1
 
-gg1 %>% ggplotly %>%
-  api_create(filename="課堂練習",fileopt="new") -> gg1plotlyMeta
+gg1 %>% ggplotly -> gp1
+gp1 %>%  api_create(filename="課堂練習",fileopt="new") -> gg1plotlyMeta
 ```
 
