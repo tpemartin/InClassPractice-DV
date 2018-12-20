@@ -9,22 +9,45 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+```{r}
+library(showtext)
+font_add("QYuan","cwTeXQYuan-Medium.ttf") # 新增字體
+showtext_auto(enable=TRUE) #啟用字體
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+library(ggplot2)
+library(dplyr)
+library(lubridate)
+library(readr)
+theme_set(theme_classic())
 ```
 
-## Including Plots
+```{r}
 
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+```{r}
+library(readr)
+library(dplyr)
+library(lubridate)
+libraryData <- read_csv("https://raw.githubusercontent.com/tpemartin/github-data/master/libraryData.csv")
+libraryData %>%
+  mutate(
+    月=month(借閱時間)
+  ) %>% 
+  select(
+    月,讀者年級
+  ) -> monthGrades
+
+monthGrades %>%
+  ggplot(aes(x=月))+
+  geom_freqpoly(aes(color=as.factor(讀者年級)),stat="count")+
+  scale_x_continuous(
+    breaks=c(1:12)
+  )-> gg1
+gg1
+
+gg1 %>% ggplotly %>%
+  api_create(filename="課堂練習",fileopt="new") -> gg1plotlyMeta
+```
+
