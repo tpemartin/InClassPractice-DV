@@ -1,0 +1,64 @@
+---
+title: "Untitled"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(plotly)
+flex_plotly<-function(.plotly){
+  .plotly[["x"]][["layout"]][["autosize"]]<-T
+  .plotly[["x"]][["layout"]][["height"]]<-c()
+  .plotly[["x"]][["layout"]][["width"]]<-c()
+  .plotly
+}
+```
+
+Hello {data-width=700}
+-------
+
+### Chart A {data-height=300}
+
+```{r}
+# https://plot.ly/~jfdarre/632
+api_download_plot("632","jfdarre") %>%
+  flex_plotly()
+```
+
+### Chart A-2 {data-height=700}
+
+```{r, fig.height=5}
+g <- ggplot(mpg, aes(class))
+# Number of cars in each class:
+g + geom_bar()-> g1
+ggplotly(g1)-> g1plotly
+g1plotly
+```
+
+
+Column {data-width=300}
+-----------------------------------------------------------------------
+
+### Chart B {data-height=700}
+
+```{r}
+# https://plot.ly/~faislabtech/0
+api_download_plot("0","faislabtech")-> plotlyB
+
+plotlyB[["x"]][["layout"]][["autosize"]]<-T #允許autoresize
+plotlyB[["x"]][["layout"]][["height"]]<-c() # 取消限高
+plotlyB[["x"]][["layout"]][["width"]]<-c() # 取消限寛
+plotlyB
+```
+
+### Chart C {data-height=300}
+
+```{r}
+# https://plot.ly/~ElPolloFrio/2251
+api_download_plot("2251","ElPolloFrio") %>%
+  flex_plotly()
+```
+
